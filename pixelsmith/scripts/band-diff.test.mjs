@@ -41,3 +41,9 @@ test('altura extra conta como mismatch total', () => {
   assert.equal(r.bands[33].mismatchPct, 100);
   assert.equal(r.bands[0].mismatchPct, 0);
 });
+
+test('band inválido lança RangeError sem travar', () => {
+  assert.throws(() => bandDiff(REF, REF, { band: 0 }), RangeError);
+  assert.throws(() => bandDiff(REF, REF, { band: -5 }), RangeError);
+  assert.throws(() => bandDiff(REF, REF, { band: 12.5 }), RangeError);
+});

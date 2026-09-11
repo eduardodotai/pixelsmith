@@ -5,6 +5,7 @@ import { getNumber, positionals, isCliInvocation, fail } from './lib/cli.mjs';
 // Mismatch por faixa horizontal. Mesma honestidade do screenshot-diff: área não sobreposta
 // (largura ou altura extra de uma das imagens) conta como mismatch total.
 export function bandDiff(pathA, pathB, { band = 50, threshold = 15 } = {}) {
+  if (!Number.isInteger(band) || band <= 0) throw new RangeError(`--band inválido: ${band} (esperado inteiro > 0)`);
   const a = readPng(pathA), b = readPng(pathB);
   const width = Math.min(a.width, b.width), fullWidth = Math.max(a.width, b.width);
   const maxH = Math.max(a.height, b.height), overlapH = Math.min(a.height, b.height);
