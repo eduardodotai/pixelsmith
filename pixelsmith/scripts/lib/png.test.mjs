@@ -43,6 +43,8 @@ test('downscaleBox faz média de blocos e floor das dimensões', () => {
   assert.deepEqual(px(d, 1, 1), [0, 0, 0, 255]);
   assert.equal(downscaleBox(p, 1), p);
   assert.throws(() => downscaleBox(p, 0), RangeError);
+  assert.throws(() => downscaleBox(createPng(5, 4), 10), RangeError);
+  assert.throws(() => downscaleBox(createPng(2, 10), 5), RangeError);
 });
 
 test('palette ordena por frequência com hex exato para cores chapadas', () => {

@@ -38,6 +38,7 @@ export function downscaleBox(png, factor) {
   if (!Number.isInteger(factor) || factor < 1) throw new RangeError(`fator inválido: ${factor}`);
   if (factor === 1) return png;
   const w = Math.floor(png.width / factor), h = Math.floor(png.height / factor);
+  if (w === 0 || h === 0) throw new RangeError(`fator ${factor} maior que a imagem ${png.width}×${png.height}`);
   const out = new PNG({ width: w, height: h });
   const n = factor * factor;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
