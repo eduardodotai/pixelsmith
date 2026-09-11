@@ -1,0 +1,8 @@
+{
+  "name": "pixelsmith-skill-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Co-located runtime deps for the pixelsmith skill scripts.",
+  "dependencies": { "pixelmatch": "^6.0.0", "pngjs": "^7.0.0" }
+}
