@@ -15,6 +15,20 @@ export function getFlag(argv, name, def) {
   return i + 1 < argv.length ? argv[i + 1] : undefined;
 }
 
+// Flag numérica obrigatoriamente finita. Valor ausente → default; valor inválido → erro (nunca NaN silencioso).
+export function getNumber(argv, name, def) {
+  const i = argv.indexOf(name);
+  if (i === -1) {
+    if (def === undefined) throw new Error(`${name} é obrigatório`);
+    return def;
+  }
+  const raw = i + 1 < argv.length ? argv[i + 1] : undefined;
+  if (raw === undefined) throw new Error(`${name} inválido: ausência de valor`);
+  const n = Number(raw);
+  if (!Number.isFinite(n)) throw new Error(`${name} inválido: "${raw}" (esperado número)`);
+  return n;
+}
+
 // Argumentos que não são flags nem valores de flags. Convenção: toda flag `--x` carrega 1 valor.
 export function positionals(argv) {
   const out = [];

@@ -1,5 +1,5 @@
 import { readPng, palette, bandProfile } from './lib/png.mjs';
-import { getFlag, positionals, isCliInvocation, fail } from './lib/cli.mjs';
+import { getNumber, positionals, isCliInvocation, fail } from './lib/cli.mjs';
 
 // Larguras de screenshot nativas de dispositivos comuns → fator de escala.
 const KNOWN_WIDTHS = {
@@ -37,7 +37,7 @@ if (isCliInvocation(import.meta.url)) {
   if (!input) fail('uso: node inspect-image.mjs <png> [--bands N] [--top N]');
   else {
     try {
-      const r = inspectImage(input, { bands: Number(getFlag(argv, '--bands', 40)), top: Number(getFlag(argv, '--top', 8)) });
+      const r = inspectImage(input, { bands: getNumber(argv, '--bands', 40), top: getNumber(argv, '--top', 8) });
       console.log(JSON.stringify(r, null, 2));
     } catch (e) { fail(`inspect-image falhou: ${e.message}`); }
   }
