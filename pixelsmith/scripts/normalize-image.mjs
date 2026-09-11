@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, extname, join } from 'node:path';
 import { readPng, writePng, crop as cropPng, downscaleBox } from './lib/png.mjs';
@@ -10,8 +10,11 @@ export async function defaultConvert(input, { platform = process.platform, exec 
   if (platform !== 'darwin') {
     throw new Error(`conversão de ${extname(input)} só é automática no macOS (sips). Converta para PNG e rode de novo.`);
   }
-  const out = join(mkdtempSync(join(tmpdir(), 'pixelsmith-')), basename(input, extname(input)) + '.png');
-  exec('sips', ['-s', 'format', 'png', input, '--out', out], { stdio: 'pipe' });
+  const dir = mkdtempSync(join(tmpdir(), 'pixelsmith-'));
+  // O PNG convertido vive só até o fim do processo: normalizeImage já o leu e gravou o --out.
+  process.once('exit', () => { try { rmSync(dir, { recursive: true, force: true }); } catch {} });
+  const out = join(dir, basename(input, extname(input)) + '.png');
+  exec('sips', ['-s', 'format', 'png', input, '--out', out]);
   return out;
 }
 

@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import { normalizeImage, defaultConvert } from './normalize-image.mjs';
 import { readPng } from './lib/png.mjs';
 import { TRUTH } from '../../tests/make-fixture.mjs';
@@ -44,4 +44,13 @@ test('defaultConvert no macOS chama sips com os argumentos certos', async () => 
   assert.deepEqual(calls[0][1].slice(0, 3), ['-s', 'format', 'png']);
   assert.equal(calls[0][1][3], '/tmp/x.heic');
   assert.ok(out.endsWith('.png'));
+});
+
+test('defaultConvert registra limpeza do tmpdir na saída do processo', async () => {
+  const before = process.listenerCount('exit');
+  const out = await defaultConvert('/tmp/y.heic', { platform: 'darwin', exec: () => {} });
+  assert.equal(process.listenerCount('exit'), before + 1);
+  assert.ok(existsSync(dirname(out)));
+  process.emit('exit', 0);   // dispara os hooks registrados → tmpdir removido
+  assert.equal(existsSync(dirname(out)), false);
 });
