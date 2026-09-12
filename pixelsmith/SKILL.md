@@ -57,7 +57,7 @@ node <skill-dir>/scripts/band-diff.mjs pixelsmith/shots/desk-1.png pixelsmith/re
 Loop drift-first até **≥ 90%** por viewport ou **platô** (3 iterações com ganho < 0,5%). Nunca número fixo de iterações. In-project: remova a rota-harness ao final (salvo pedido).
 
 ### Fase 4 — Report
-`pixelsmith/report.md`: modo + gate de origem, escala/crop, score por viewport, tabela de iterações, drift por seção (±6px), mapa de editabilidade, arquivos tocados (in-project), **"Não reproduzido"**. **Nunca 100%.**
+`pixelsmith/report.md`: modo + gate de origem, escala/crop, score por viewport, tabela de iterações, drift por seção (±6px), mapa de editabilidade, arquivos tocados (in-project), **"Não reproduzido"**. **Nunca arredonde nem declare fidelidade total: reporte o score medido; se ele for 100%, explique por que o caso é degenerado (ex.: fixture chapado, sem texto) e liste o que segue não reproduzido.**
 
 ## Scripts
 
@@ -85,4 +85,4 @@ faz esse print virar um componente aqui no projeto
 - Não aceita vídeo/gravação de tela.
 - Não reproduz motion: um print é estático; animação seria invenção.
 - Print de terceiro sem confirmação de origem → não constrói; com confirmação → só base de layout.
-- Nunca reporta 100%: score medido é o que o diff disse; gap é listado.
+- Nunca arredonda o score nem declara fidelidade total: o número é o que o diff mediu, e o gap é sempre listado — um 100% só é aceitável com a explicação do caso degenerado.

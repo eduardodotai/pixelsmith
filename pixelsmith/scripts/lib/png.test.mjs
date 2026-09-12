@@ -71,3 +71,10 @@ test('bandProfile: última banda absorve o resto', () => {
 });
 
 test('toHex', () => { assert.equal(toHex(255, 0, 16), '#ff0010'); });
+
+test('writePng cria o diretório de saída se não existir', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'png-'));
+  const out = join(dir, 'a', 'b', 'c.png');
+  writePng(out, createPng(2, 2));
+  assert.equal(readPng(out).width, 2);
+});

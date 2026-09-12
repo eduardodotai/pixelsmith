@@ -12,6 +12,8 @@ screenshot via chrome-devtools MCP, `screenshot-diff.mjs` (score),
 - Standalone: full-page. In-project: screenshot do `div` do harness.
 - Fontes carregadas: espere `document.fonts.ready` antes de capturar.
 - Sem hover, sem foco, sem scrollbar visível (`overflow` do body sem barra).
+- Antes de capturar, `mkdir -p pixelsmith/shots` (o screenshot do MCP não cria pastas) e rode um `evaluate_script` conferindo `document.documentElement.scrollWidth === <largura da referência>` e `window.devicePixelRatio`. scrollWidth diferente = scrollbar ocupando layout ou viewport errado: problema de CAPTURA, não de CSS — corrija antes de diffar. devicePixelRatio 2 = o PNG sai @2x: normalize com `--scale 2` antes do diff.
+- `resize_page` pode não atingir a altura pedida (limite da tela) sem erro; irrelevante para captura full-page, mas confira a largura.
 
 ## 2. Medir
 
@@ -61,5 +63,4 @@ Obrigatório:
   removido ou mantido.
 - **"Não reproduzido"**: cada gap com causa e impacto estimado.
 
-**Nunca declare 100%.** O número é o que o diff mediu; gap é listado, não
-maquiado.
+**Nunca arredonde nem declare fidelidade total.** O número é o que o diff mediu; gap é listado, não maquiado. Se o diff medir 100% (só acontece em casos degenerados: fixture chapado, sem texto, sem compressão), diga isso explicitamente e liste mesmo assim o que não foi exercitado.

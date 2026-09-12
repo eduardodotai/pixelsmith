@@ -1,8 +1,12 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { PNG } from 'pngjs';
 
 export function readPng(path) { return PNG.sync.read(readFileSync(path)); }
-export function writePng(path, png) { writeFileSync(path, PNG.sync.write(png)); }
+export function writePng(path, png) {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, PNG.sync.write(png));
+}
 
 export function toHex(r, g, b) {
   return '#' + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');

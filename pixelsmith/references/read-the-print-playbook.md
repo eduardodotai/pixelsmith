@@ -29,6 +29,7 @@ começa no pixel 0.
 
 1. `inspect-image.mjs --bands 40`: o perfil `bands[].lum/variance` mostra onde
    o fundo muda (salto de luminância) e onde há conteúdo denso (variância alta).
+   Para a fronteira EXATA, rode de novo sobre a referência @1x com `--bands <altura da imagem>` (1 px por banda) e filtre as linhas onde `lum` ou `variance` mudam — isso dá o y exato sem ler a olho e cabe na tolerância de ±4px.
 2. Para cada fronteira candidata, `crop-region.mjs` (sobre `pixelsmith/reference/desk@1x.png`) de uma faixa de 60px em
    torno dela e olhe a imagem: confirme o y exato da transição.
 3. Escreva `pixelsmith/section-map.json`:
@@ -39,8 +40,7 @@ começa no pixel 0.
      "font": { "family": "Inter", "evidence": "specimen 2026-09-11", "fallback": true },
      "assets": [ { "name": "hero-photo", "box1x": [800,160,520,360], "boxFile": [1600,320,1040,720] } ] }
    ```
-4. Colunas e gutters: crop (sobre a referência @1x) de uma faixa horizontal de 20px onde os cards
-   aparecem e leia os x de início/fim de cada bloco.
+4. Colunas, gutters e caixas de elementos (eixo x): não leia a olho. Padrão que fecha em ±0px só com os scripts existentes: `crop-region.mjs` na caixa candidata (sobre a referência @1x) → `inspect-image.mjs --top 3`. A caixa está certa quando o recorte ENCOLHIDO em 1px devolve paleta 100% monocromática (ou só as cores internas esperadas) e o recorte EXPANDIDO em 2px traz a cor do fundo junto. Ajuste x/w até satisfazer os dois; registre a caixa.
 
 Tolerância de medida: ±4px @1x. Anote a medida, não o "aproximadamente".
 
@@ -74,6 +74,8 @@ Fonte não identificada → substituta declarada no report, com o gap estimado.
 | Ícone simples (seta, check, hambúrguer), gradiente, sombra, borda, badge de cor chapada | **Reproduz em CSS/SVG inline** |
 | Ícone complexo ou logo vetorial que não dá para reproduzir | Recorta como PNG e declara no report como "asset raster de um vetor" |
 | Elemento parcialmente coberto (texto sobre a foto) | Recorta a foto inteira; o texto é reconstruído por cima. Se o texto "vaza" no recorte, declare |
+
+Desempate por PAPEL no layout, não por conteúdo de pixel: se a caixa é o lugar de uma imagem (foto, ilustração, avatar, logo), recorte-a mesmo que o print mostre um placeholder chapado — é o que estará certo quando a imagem real entrar.
 
 Nunca recorte o print inteiro e embede como imagem: o objetivo é código.
 
