@@ -30,6 +30,7 @@ Gates com você: escala do print (retina?), origem (seu/cliente ou terceiro → 
 - `site/` (standalone) ou `<components>/<Nome>.tsx` + tokens novos no arquivo de tokens do projeto (in-project)
 - `pixelsmith/report.md`: score por viewport, tabela de iterações (prova do platô), drift por seção, mapa de editabilidade, **"Não reproduzido"**
 - Nunca 100%.
+- Smoke no fixture sintético (1440×1600, verdade conhecida): **100,00%** em 1 iteração — qualquer valor abaixo de 95% indica bug de captura, não de design.
 
 ## Arquitetura
 
