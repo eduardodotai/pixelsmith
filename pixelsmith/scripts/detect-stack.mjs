@@ -57,7 +57,7 @@ export function detectStack(dir = '.') {
   const componentsDir = COMPONENT_DIRS.filter(exists);
   const tokenFiles = TOKEN_FILES.filter(exists).map((p) => ({
     path: p,
-    hasRootVars: /\.css$/.test(p) && /:root\s*\{[^}]*--/.test(readFileSync(join(dir, p), 'utf8')),
+    hasRootVars: /\.css$/.test(p) && /:root[^{]*\{[^}]*--/.test(readFileSync(join(dir, p), 'utf8')),
   }));
 
   let packageManager = 'npm';

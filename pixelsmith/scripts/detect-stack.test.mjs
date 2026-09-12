@@ -70,3 +70,21 @@ test('sem package.json: tudo nulo/vazio, sem lançar', () => {
   const r = detectStack(mkdtempSync(join(tmpdir(), 'empty-')));
   assert.equal(r.framework, null); assert.deepEqual(r.styling, ['vanilla']); assert.equal(r.packageManager, 'npm');
 });
+
+test('hasRootVars reconhece :root com seletores combinados e sem vars', () => {
+  const combo = project({
+    'package.json': { dependencies: { next: '15.0.0' } },
+    'app/globals.css': ':root, .dark {\n  --bg: #000;\n}',
+  });
+  assert.deepEqual(detectStack(combo).tokenFiles, [{ path: 'app/globals.css', hasRootVars: true }]);
+  const attr = project({
+    'package.json': { dependencies: { next: '15.0.0' } },
+    'app/globals.css': ':root[data-theme="dark"] { --bg: #000; }',
+  });
+  assert.equal(detectStack(attr).tokenFiles[0].hasRootVars, true);
+  const none = project({
+    'package.json': { dependencies: { next: '15.0.0' } },
+    'app/globals.css': ':root { color: red; }',
+  });
+  assert.equal(detectStack(none).tokenFiles[0].hasRootVars, false);
+});
