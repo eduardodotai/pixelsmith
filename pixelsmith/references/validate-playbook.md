@@ -13,7 +13,8 @@ screenshot via chrome-devtools MCP, `screenshot-diff.mjs` (score),
 - Fontes carregadas: espere `document.fonts.ready` antes de capturar.
 - Sem hover, sem foco, sem scrollbar visível (`overflow` do body sem barra).
 - Antes de capturar, `mkdir -p pixelsmith/shots` (o screenshot do MCP não cria pastas) e rode um `evaluate_script` conferindo `document.documentElement.scrollWidth === <largura da referência>` e `window.devicePixelRatio`. scrollWidth diferente = scrollbar ocupando layout ou viewport errado: problema de CAPTURA, não de CSS — corrija antes de diffar. devicePixelRatio 2 = o PNG sai @2x: normalize com `--scale 2` antes do diff.
-- `resize_page` pode não atingir a altura pedida (limite da tela) sem erro; irrelevante para captura full-page, mas confira a largura.
+- `resize_page` pode falhar em silêncio (largura presa, dpr 2). Prefira `emulate` do chrome-devtools com `viewport` na largura da referência e `deviceScaleFactor: 1`, e confirme via `evaluate_script` (`innerWidth`, `devicePixelRatio`, `scrollWidth`) antes de capturar. Se o dpr continuar 2, normalize o screenshot com `--scale 2`.
+- In-project com `next dev`: o overlay `<nextjs-portal>` (badge/dev tools) entra no screenshot. Remova antes de cada captura: `evaluate_script` → `document.querySelector('nextjs-portal')?.remove()`.
 
 ## 2. Medir
 
@@ -24,6 +25,10 @@ node <skill-dir>/scripts/band-diff.mjs      pixelsmith/shots/desk-N.png pixelsmi
 
 `scorePct` é o número do report. Área não sobreposta (altura diferente) conta
 como mismatch total — isso é intencional; não normalize dimensões.
+
+O diff não enxerga Δ pequenos de cor (threshold 0.1 ≈ várias dezenas de
+níveis RGB). Cores arredondadas ou substituídas por tokens do projeto passam
+com score cheio — por isso o report tem a tabela de desvios de cor (§5).
 
 ## 3. Loop drift-first
 
@@ -61,6 +66,9 @@ Obrigatório:
 - Mapa de editabilidade: onde trocar copy, cores/tokens, imagens.
 - In-project: lista de arquivos criados/alterados no projeto; tokens novos; harness
   removido ou mantido.
+- Tabela de desvios de cor invisíveis ao diff: cor do print → cor/token usado
+  → ΔRGB → área aproximada (in-project: toda substituição por token;
+  standalone: todo arredondamento).
 - **"Não reproduzido"**: cada gap com causa e impacto estimado.
 
 **Nunca arredonde nem declare fidelidade total.** O número é o que o diff mediu; gap é listado, não maquiado. Se o diff medir 100% (só acontece em casos degenerados: fixture chapado, sem texto, sem compressão), diga isso explicitamente e liste mesmo assim o que não foi exercitado.

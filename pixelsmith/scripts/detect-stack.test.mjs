@@ -92,3 +92,12 @@ test('hasRootVars reconhece :root com seletores combinados e sem vars', () => {
   });
   assert.equal(detectStack(none).tokenFiles[0].hasRootVars, false);
 });
+
+test('componentsDir encontra pastas aninhadas e em PT-BR (componentes)', () => {
+  const dir = project({
+    'package.json': { dependencies: { next: '16.0.0', react: '19.0.0' } },
+    'src/app/(app)/componentes/Card.tsx': '',
+    'node_modules/x/components/ignored.js': '',
+  });
+  assert.deepEqual(detectStack(dir).componentsDir, ['src/app/(app)/componentes']);
+});

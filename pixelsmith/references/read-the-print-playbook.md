@@ -71,7 +71,7 @@ Fonte não identificada → substituta declarada no report, com o gap estimado.
 | É | Faz |
 |---|---|
 | Foto, ilustração, logo bitmap, screenshot dentro do print, avatar | **Recorta** com `crop-region.mjs` do arquivo ORIGINAL (melhor resolução), caixa registrada em @1x E em px do arquivo |
-| Ícone simples (seta, check, hambúrguer), gradiente, sombra, borda, badge de cor chapada | **Reproduz em CSS/SVG inline** |
+| Ícone simples (seta, check, hambúrguer), gradiente, sombra, borda, badge/bloco de cor chapada **que não ocupa o lugar de uma imagem** | **Reproduz em CSS/SVG inline** |
 | Ícone complexo ou logo vetorial que não dá para reproduzir | Recorta como PNG e declara no report como "asset raster de um vetor" |
 | Elemento parcialmente coberto (texto sobre a foto) | Recorta a foto inteira; o texto é reconstruído por cima. Se o texto "vaza" no recorte, declare |
 

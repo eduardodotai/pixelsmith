@@ -25,6 +25,12 @@ Para cada cor do `pixelsmith/section-map.json`:
 3. Nunca escreva hex solto em JSX/Tailwind (`bg-[#2563eb]`) quando existe
    token. Arbitrário só para valores únicos de layout (ex.: `h-[520px]`).
 
+**Atenção:** o diff de validação (pixelmatch, threshold 0.1) NÃO enxerga
+diferenças de cor dessa ordem — uma substituição por token com Δ>0 passa com
+score cheio. Por isso toda substituição vai na tabela de desvios do report
+(§5 do validate-playbook): cor do print → token usado → ΔRGB → área
+aproximada, marcada como *invisível ao diff*.
+
 Tipografia e espaçamento: mesma regra (escala do Tailwind / vars do projeto;
 valor arbitrário só quando a medida não cai na escala e importa para a
 fidelidade).
@@ -54,13 +60,22 @@ Renderiza SÓ o componente, na largura exata do print @1x, sem layout global
 (sem header/sidebar/providers de app que mudem o visual). Antes de escrever:
 verifique que o caminho não existe (colisão → abortar e perguntar).
 
+- Middleware: verifique `middleware.ts`, `src/middleware.ts`, `proxy.ts`,
+  `src/proxy.ts` (Next 16) por matchers/redirects de auth que interceptem a
+  rota do harness. Se interceptar, adicione o caminho do harness à exceção
+  pública da forma mínima possível, registre no report e reverta na limpeza.
+
 Next app router — `app/pixelsmith-harness/<slug>/page.tsx` (ou `src/app/...`):
 ```tsx
 import Nome from '@/components/Nome';
 export default function Page() {
-  return <div style={{ width: 1440, margin: 0 }}><Nome /></div>;
+  return <div role="region" aria-label="pixelsmith-harness" style={{ width: 1440, margin: 0 }}><Nome /></div>;
 }
 ```
+O `role`/`aria-label` colocam o div na árvore de acessibilidade — é o que
+permite ao chrome-devtools fotografar o elemento por uid; um `<div>` anônimo
+não aparece lá. Aplique o mesmo atributo nos harnesses dos outros frameworks.
+
 O layout raiz (`app/layout.tsx`) SEMPRE envolve a página — um layout aninhado
 não o substitui, e um route group também não escapa dele. Por isso a
 validação fotografa o `div` do harness, não a página inteira (§5). Se o
@@ -83,15 +98,21 @@ Nuxt — `pages/pixelsmith-harness-<slug>.vue` importando o componente num
 `<div :style="{ width: '1440px', margin: 0 }">`.
 
 Dev server: se não estiver respondendo na porta esperada, rode `devCommand`
-em background e espere até 60s pela porta; se não subir, pare a validação e
-entregue o componente **sem score, dizendo isso**.
+em background e espere até 60s pela porta. Se o `devCommand` falhar de
+imediato (ex.: Turbopack recusando `node_modules` via symlink), tente UMA vez
+a variante sem Turbopack (`next dev --webpack`, ou o equivalente do
+framework) antes de desistir. Se não subir, pare a validação e entregue o
+componente **sem score, dizendo isso**.
 
 ## 5. Validar e limpar
 
 - Screenshot via chrome-devtools do elemento `div` do harness (não full-page
   da rota) na largura do print; diff e loop conforme `validate-playbook.md`.
-- Ao terminar: **remova** a rota-harness (e o `layout.tsx` auxiliar), a menos
-  que o usuário peça para manter. `pixelsmith/` (artefatos) fica fora de `src/`
-  e entra no `.gitignore` do projeto (adicione a linha se não existir), salvo
-  pedido contrário.
+- Ao terminar: **remova** a rota-harness (e reverta qualquer alteração feita
+  em `app/layout.tsx` ou no middleware, se houve), a menos que o usuário peça
+  para manter. O dev server pode criar arquivos (`AGENTS.md`, `CLAUDE.md`,
+  `.next/`): compare o `git status --short` de antes e depois e remova só o
+  que não existia. `pixelsmith/` (artefatos) fica fora de `src/` e entra no
+  `.gitignore` do projeto (adicione a linha se não existir), salvo pedido
+  contrário.
 - Report lista TODOS os arquivos criados/alterados no projeto, com o que mudou.

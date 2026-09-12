@@ -1,8 +1,10 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative, sep } from 'node:path';
 import { positionals, isCliInvocation, fail } from './lib/cli.mjs';
 
 const COMPONENT_DIRS = ['src/components', 'components', 'app/components', 'src/lib/components', 'src/ui', 'src/app/components'];
+const SCAN_DIR_NAME_RE = /^(components|componentes|ui|widgets)$/i;
+const SCAN_SKIP_DIRS = new Set(['node_modules', '.next', 'dist', 'build']);
 const TOKEN_FILES = [
   'tailwind.config.js', 'tailwind.config.ts', 'tailwind.config.mjs', 'tailwind.config.cjs',
   'app/globals.css', 'src/app/globals.css', 'src/index.css', 'src/styles/globals.css', 'styles/globals.css',
@@ -11,6 +13,25 @@ const TOKEN_FILES = [
 
 function readJson(p) { try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; } }
 function major(v) { const m = String(v ?? '').match(/(\d+)/); return m ? Number(m[1]) : null; }
+
+// Varre o projeto até profundidade 4 procurando pastas de componentes por nome
+// de diretório (ex.: `componentes` em PT-BR, ou aninhadas em route groups),
+// ignorando node_modules/.next/dist/build e pastas ocultas.
+function scanComponentDirs(root, dir = root, depth = 0, found = []) {
+  let entries;
+  try { entries = readdirSync(dir); } catch { return found; }
+  for (const e of entries) {
+    if (SCAN_SKIP_DIRS.has(e) || e.startsWith('.')) continue;
+    const p = join(dir, e);
+    let st; try { st = statSync(p); } catch { continue; }
+    if (!st.isDirectory()) continue;
+    const entryDepth = depth + 1;
+    if (entryDepth > 4) continue;
+    if (SCAN_DIR_NAME_RE.test(e)) found.push(relative(root, p).split(sep).join('/'));
+    scanComponentDirs(root, p, entryDepth, found);
+  }
+  return found;
+}
 
 // Procura *.module.css até 4 níveis, ignorando node_modules e pastas ocultas.
 function hasCssModules(root, depth = 0) {
@@ -55,7 +76,11 @@ export function detectStack(dir = '.') {
   if (has('styled-components')) styling.push('styled-components');
   if (styling.length === 0) styling.push('vanilla');
 
-  const componentsDir = COMPONENT_DIRS.filter(exists);
+  const fixedComponentDirs = COMPONENT_DIRS.filter(exists);
+  const scannedComponentDirs = Array.from(new Set(scanComponentDirs(dir)))
+    .filter((p) => !fixedComponentDirs.includes(p))
+    .sort();
+  const componentsDir = [...fixedComponentDirs, ...scannedComponentDirs];
   const tokenFiles = TOKEN_FILES.filter(exists).map((p) => ({
     path: p,
     hasRootVars: /\.css$/.test(p) && /:root[^{]*\{[^}]*--/.test(readFileSync(join(dir, p), 'utf8')),

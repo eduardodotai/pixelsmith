@@ -54,10 +54,10 @@ node <skill-dir>/scripts/serve.mjs site/ --port 4321          # standalone
 node <skill-dir>/scripts/screenshot-diff.mjs pixelsmith/shots/desk-1.png pixelsmith/reference/desk@1x.png --out pixelsmith/shots/diff-desk-1.png
 node <skill-dir>/scripts/band-diff.mjs pixelsmith/shots/desk-1.png pixelsmith/reference/desk@1x.png --band 50
 ```
-Loop drift-first até **≥ 90%** por viewport ou **platô** (3 iterações com ganho < 0,5%). Nunca número fixo de iterações. In-project: remova a rota-harness ao final (salvo pedido).
+Loop drift-first até **≥ 90%** por viewport ou **platô** (3 iterações com ganho < 0,5%). Nunca número fixo de iterações. In-project: remova a rota-harness ao final (salvo pedido) (harness com `role="region"`, overlay `nextjs-portal` removido, viewport via `emulate`).
 
 ### Fase 4 — Report
-`pixelsmith/report.md`: modo + gate de origem, escala/crop, score por viewport, tabela de iterações, drift por seção (±6px), mapa de editabilidade, arquivos tocados (in-project), **"Não reproduzido"**. **Nunca arredonde nem declare fidelidade total: reporte o score medido; se ele for 100%, explique por que o caso é degenerado (ex.: fixture chapado, sem texto) e liste o que segue não reproduzido.**
+`pixelsmith/report.md`: modo + gate de origem, escala/crop, score por viewport, tabela de iterações, drift por seção (±6px), tabela de desvios de cor invisíveis ao diff (tokens/arredondamentos com ΔRGB e área), mapa de editabilidade, arquivos tocados (in-project), **"Não reproduzido"**. **Nunca arredonde nem declare fidelidade total: reporte o score medido; se ele for 100%, explique por que o caso é degenerado (ex.: fixture chapado, sem texto) e liste o que segue não reproduzido.**
 
 ## Scripts
 

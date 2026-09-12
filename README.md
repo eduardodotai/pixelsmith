@@ -31,6 +31,7 @@ Gates com você: escala do print (retina?), origem (seu/cliente ou terceiro → 
 - `pixelsmith/report.md`: score por viewport, tabela de iterações (prova do platô), drift por seção, mapa de editabilidade, **"Não reproduzido"**
 - Nunca arredonda nem declara fidelidade total: o score é o que o diff mediu, o gap é sempre listado, e um 100% só aparece acompanhado da explicação do caso degenerado.
 - Smoke no fixture sintético (1440×1600, verdade conhecida): **100,00%** em 1 iteração — qualquer valor abaixo de 95% indica bug de captura, não de design (fixture chapado, sem texto: mede o pipeline de captura e diff, não o design).
+- Smoke in-project (worktree do omni-core, Next 16 app router + TS + CSS vanilla): **100,00%** em 1 iteração; 4 tokens do projeto reaproveitados, 4 novos declarados; harness criada e removida — critério 2 da spec evidenciado.
 
 ## Arquitetura
 
