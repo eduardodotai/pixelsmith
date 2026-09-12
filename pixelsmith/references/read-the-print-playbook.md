@@ -31,7 +31,7 @@ começa no pixel 0.
    o fundo muda (salto de luminância) e onde há conteúdo denso (variância alta).
    Para a fronteira EXATA, rode de novo sobre a referência @1x com `--bands <altura da imagem>` (1 px por banda) e filtre as linhas onde `lum` ou `variance` mudam — isso dá o y exato sem ler a olho e cabe na tolerância de ±4px.
 2. Para cada fronteira candidata, `crop-region.mjs` (sobre `pixelsmith/reference/desk@1x.png`) de uma faixa de 60px em
-   torno dela e olhe a imagem: confirme o y exato da transição.
+   torno dela e olhe a imagem só para CONFIRMAR visualmente a fronteira que o perfil de 1px apontou — o y vem do perfil, não do olho.
 3. Escreva `pixelsmith/section-map.json`:
    ```json
    { "scale": 2, "width": 1440,

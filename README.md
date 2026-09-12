@@ -29,7 +29,7 @@ Gates com você: escala do print (retina?), origem (seu/cliente ou terceiro → 
 
 - `site/` (standalone) ou `<components>/<Nome>.tsx` + tokens novos no arquivo de tokens do projeto (in-project)
 - `pixelsmith/report.md`: score por viewport, tabela de iterações (prova do platô), drift por seção, mapa de editabilidade, **"Não reproduzido"**
-- Nunca arredonda: o score é o que o diff mediu, e o gap é sempre listado.
+- Nunca arredonda nem declara fidelidade total: o score é o que o diff mediu, o gap é sempre listado, e um 100% só aparece acompanhado da explicação do caso degenerado.
 - Smoke no fixture sintético (1440×1600, verdade conhecida): **100,00%** em 1 iteração — qualquer valor abaixo de 95% indica bug de captura, não de design (fixture chapado, sem texto: mede o pipeline de captura e diff, não o design).
 
 ## Arquitetura
