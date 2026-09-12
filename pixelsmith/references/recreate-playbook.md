@@ -1,7 +1,7 @@
 # Playbook — Recreate (modo standalone: print → HTML/CSS estático)
 
-Entrada: `section-map.json`, `reference/desk@1x.png` (e `mobile@1x.png` se
-houver), `assets/`. Saída: `site/` servível por `serve.mjs`, sem build, sem
+Entrada: `pixelsmith/section-map.json`, `pixelsmith/reference/desk@1x.png` (e `pixelsmith/reference/mobile@1x.png` se
+houver), `pixelsmith/assets/`. Saída: `site/` servível por `serve.mjs`, sem build, sem
 CDN, sem JS de motion.
 
 ## Estrutura de saída
@@ -15,7 +15,7 @@ site/
 │   ├── sections.css    # uma região comentada por seção, com as medidas em px
 │   └── responsive.css  # só quando há print mobile
 ├── js/main.js          # só quando há 2 prints: fit-zoom (abaixo). Nada de motion.
-└── assets/             # cópias dos recortes
+└── assets/             # cópias dos recortes de pixelsmith/assets/
 ```
 
 - `tokens.css`: nomes semânticos (`--c-bg`, `--c-surface`, `--c-text`,
@@ -39,7 +39,7 @@ site/
 
 ## Copy, fontes e assets
 
-- Copy verbatim do `section-map.json` (regra 7 do playbook de leitura).
+- Copy verbatim do `pixelsmith/section-map.json` (regra 7 do playbook de leitura).
 - Fonte: a escolhida no specimen; se substituta, mantenha as métricas
   (font-size e line-height medidos) e declare o gap.
 - Assets: `<img>` com `width`/`height` da caixa @1x e `object-fit: cover`.

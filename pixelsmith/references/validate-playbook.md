@@ -6,7 +6,7 @@ screenshot via chrome-devtools MCP, `screenshot-diff.mjs` (score),
 
 ## 1. Captura
 
-- Viewport na largura EXATA da referência @1x (`reference/desk@1x.png`).
+- Viewport na largura EXATA da referência @1x (`pixelsmith/reference/desk@1x.png`).
   Device scale factor 1 (screenshot em px CSS). Se o MCP capturar em 2x,
   normalize o screenshot com `normalize-image.mjs --scale 2` antes do diff.
 - Standalone: full-page. In-project: screenshot do `div` do harness.

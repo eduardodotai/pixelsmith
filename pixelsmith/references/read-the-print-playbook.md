@@ -9,11 +9,13 @@ para medir com um crop.**
 `inspect-image.mjs` sugere a escala (`suggestedScale` + `scaleReason`). Confirme
 com o usuário em 1 pergunta ("esse print é de tela retina? sugestão: 2x"). Toda
 medida abaixo é em **px @1x** — a referência de validação é
-`reference/desk@1x.png` gerada por `normalize-image.mjs --scale S`.
+`pixelsmith/reference/desk@1x.png` gerada por `normalize-image.mjs --scale S`.
 
 Sinais de retina que o script não vê: texto muito nítido em fonte pequena,
 ícones de 32px+ que "parecem" 16px, largura 2560+ com layout que claramente é
 1280.
+
+**Regra de unidade para crops:** todo crop de MEDIÇÃO (fronteiras de seção, colunas, cores, glifos) usa `pixelsmith/reference/desk@1x.png` como entrada do `crop-region.mjs` — as caixas ficam em @1x sem conversão. Só a EXTRAÇÃO DE ASSETS (seção 6) usa o arquivo ORIGINAL, com a caixa @1x multiplicada por S (`boxFile = box1x × S`), para manter a resolução.
 
 ## 2. Tire o que não é interface
 
@@ -27,7 +29,7 @@ começa no pixel 0.
 
 1. `inspect-image.mjs --bands 40`: o perfil `bands[].lum/variance` mostra onde
    o fundo muda (salto de luminância) e onde há conteúdo denso (variância alta).
-2. Para cada fronteira candidata, `crop-region.mjs` de uma faixa de 60px em
+2. Para cada fronteira candidata, `crop-region.mjs` (sobre `pixelsmith/reference/desk@1x.png`) de uma faixa de 60px em
    torno dela e olhe a imagem: confirme o y exato da transição.
 3. Escreva `pixelsmith/section-map.json`:
    ```json
@@ -37,7 +39,7 @@ começa no pixel 0.
      "font": { "family": "Inter", "evidence": "specimen 2026-09-11", "fallback": true },
      "assets": [ { "name": "hero-photo", "box1x": [800,160,520,360], "boxFile": [1600,320,1040,720] } ] }
    ```
-4. Colunas e gutters: crop de uma faixa horizontal de 20px onde os cards
+4. Colunas e gutters: crop (sobre a referência @1x) de uma faixa horizontal de 20px onde os cards
    aparecem e leia os x de início/fim de cada bloco.
 
 Tolerância de medida: ±4px @1x. Anote a medida, não o "aproximadamente".
@@ -45,7 +47,7 @@ Tolerância de medida: ±4px @1x. Anote a medida, não o "aproximadamente".
 ## 4. Cores por amostragem, nunca por memória
 
 - `palette` do inspect dá os fundos e as cores dominantes.
-- Para cor de texto, acento, borda: crop de 8×8px numa área CHAPADA do
+- Para cor de texto, acento, borda: crop (sobre a referência @1x) de 8×8px numa área CHAPADA do
   elemento (não em borda antialiasada) e leia o hex. Uma amostra em
   antialiasing dá cor errada — escolha o miolo.
 - Gradiente: amostre início, meio e fim; declare o ângulo pela direção da

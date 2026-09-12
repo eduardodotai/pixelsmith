@@ -16,7 +16,7 @@ node <skill-dir>/scripts/detect-stack.mjs . > pixelsmith/stack.json
 
 ## 2. Tokens do projeto primeiro
 
-Para cada cor do `section-map.json`:
+Para cada cor do `pixelsmith/section-map.json`:
 1. Procure equivalente nos tokens existentes (Tailwind `theme.colors`, `:root`
    vars, `theme.ts`). Aceite se a distância for pequena: |ΔR|+|ΔG|+|ΔB| ≤ 24
    (≈ imperceptível em UI chapada).
