@@ -4,7 +4,7 @@ import { mkdtempSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { normalizeImage, defaultConvert } from './normalize-image.mjs';
-import { readPng } from './lib/png.mjs';
+import { readPng, writePng, createPng } from './lib/png.mjs';
 import { TRUTH } from '../../tests/make-fixture.mjs';
 
 const FX = 'tests/fixtures/synthetic';
@@ -39,7 +39,7 @@ test('defaultConvert fora do macOS falha com instrução', async () => {
 
 test('defaultConvert no macOS chama sips com os argumentos certos', async () => {
   const calls = [];
-  const out = await defaultConvert('/tmp/x.heic', { platform: 'darwin', exec: (cmd, args) => { calls.push([cmd, args]); } });
+  const out = await defaultConvert('/tmp/x.heic', { platform: 'darwin', exec: (cmd, args) => { calls.push([cmd, args]); writePng(args[5], createPng(1, 1)); } });
   assert.equal(calls[0][0], 'sips');
   assert.deepEqual(calls[0][1].slice(0, 3), ['-s', 'format', 'png']);
   assert.equal(calls[0][1][3], '/tmp/x.heic');
@@ -47,10 +47,16 @@ test('defaultConvert no macOS chama sips com os argumentos certos', async () => 
 });
 
 test('defaultConvert registra limpeza do tmpdir na saída do processo', async () => {
-  const before = process.listenerCount('exit');
-  const out = await defaultConvert('/tmp/y.heic', { platform: 'darwin', exec: () => {} });
-  assert.equal(process.listenerCount('exit'), before + 1);
+  const before = process.listeners('exit');
+  const beforeCount = before.length;
+  const out = await defaultConvert('/tmp/y.heic', { platform: 'darwin', exec: (cmd, args) => { writePng(args[5], createPng(1, 1)); } });
+  assert.equal(process.listenerCount('exit'), beforeCount + 1);
   assert.ok(existsSync(dirname(out)));
-  process.emit('exit', 0);   // dispara os hooks registrados → tmpdir removido
+  const added = process.listeners('exit').filter((l) => !before.includes(l));
+  added.forEach((l) => l(0));   // dispara só o(s) hook(s) que este teste registrou → tmpdir removido
   assert.equal(existsSync(dirname(out)), false);
+});
+
+test('defaultConvert falha alto quando o sips não escreve o PNG', async () => {
+  await assert.rejects(() => defaultConvert('/tmp/nope.jpg', { platform: 'darwin', exec: () => {} }), /sips não converteu/);
 });

@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, extname, join } from 'node:path';
 import { readPng, writePng, crop as cropPng, downscaleBox } from './lib/png.mjs';
@@ -15,6 +15,7 @@ export async function defaultConvert(input, { platform = process.platform, exec 
   process.once('exit', () => { try { rmSync(dir, { recursive: true, force: true }); } catch {} });
   const out = join(dir, basename(input, extname(input)) + '.png');
   exec('sips', ['-s', 'format', 'png', input, '--out', out]);
+  if (!existsSync(out)) throw new Error(`sips não converteu ${input}: arquivo inexistente ou formato não suportado`);
   return out;
 }
 

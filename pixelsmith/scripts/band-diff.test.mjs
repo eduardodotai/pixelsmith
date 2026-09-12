@@ -47,3 +47,13 @@ test('band inválido lança RangeError sem travar', () => {
   assert.throws(() => bandDiff(REF, REF, { band: -5 }), RangeError);
   assert.throws(() => bandDiff(REF, REF, { band: 12.5 }), RangeError);
 });
+
+test('largura extra conta como mismatch em toda banda', () => {
+  const wide = createPng(TRUTH.width + 360, TRUTH.height, [255, 255, 255, 255]);
+  const ref = readPng(REF);
+  for (let y = 0; y < ref.height; y++) wide.data.set(ref.data.subarray(y * ref.width * 4, (y + 1) * ref.width * 4), y * wide.width * 4);
+  const p = join(mkdtempSync(join(tmpdir(), 'bd3-')), 'wide.png');
+  writePng(p, wide);
+  const r = bandDiff(p, REF, { band: 50 });
+  assert.equal(r.bands[0].mismatchPct, 20);   // 360 / 1800
+});

@@ -100,7 +100,7 @@ LICENSE                            # MIT
 1. `detect-stack.mjs` → `stack.json`. Framework não suportado → cai para standalone e entrega o CSS como referência, dizendo isso no report.
 2. **Tokens do projeto primeiro**: cores/tipografia/espaçamento existentes (tailwind.config, `:root` do globals.css, theme.ts) são mapeados às cores lidas do print; só cria token novo quando não há equivalente próximo (ΔE alto — o playbook define a tolerância), e declara os novos no report.
 3. Componente no idioma do projeto: TSX se o projeto é TS, classes Tailwind se é Tailwind, CSS Module se é CSS Module; props para o que é conteúdo (copy, imagens); assets copiados para a pasta pública/assets convencional do projeto.
-4. **Rota-harness** temporária que renderiza o componente na largura exata do print, sem layout global (sem header/sidebar do app): receitas por framework no playbook (Next app router `app/_pixelsmith/<slug>/page.tsx`, pages router `pages/_pixelsmith-<slug>.tsx`, Vite `pixelsmith-harness.html` + entry, Astro `src/pages/_pixelsmith-<slug>.astro`, SvelteKit `src/routes/_pixelsmith-<slug>/+page.svelte`). Se o dev server não está rodando, sobe com o `devCommand` detectado (em background) e avisa.
+4. **Rota-harness** temporária que renderiza o componente na largura exata do print, sem layout global (sem header/sidebar do app): receitas por framework no playbook (Next app router `app/pixelsmith-harness/<slug>/page.tsx`, pages router `pages/pixelsmith-harness-<slug>.tsx`, Vite `pixelsmith-harness.html` + entry, Astro `src/pages/pixelsmith-harness-<slug>.astro`, SvelteKit `src/routes/pixelsmith-harness-<slug>/+page.svelte`, Nuxt `pages/pixelsmith-harness-<slug>.vue`). Se o dev server não está rodando, sobe com o `devCommand` detectado (em background) e avisa.
 5. Ao final: remove a rota-harness (a menos que o usuário peça para manter) e lista no report cada arquivo criado/alterado no projeto.
 
 ### Fase 3 — Validar (`validate-playbook.md`)
@@ -121,11 +121,11 @@ Convenções da família: ESM, dual-mode (função exportada + bloco CLI guardad
 | `normalize-image.mjs <in> --out <png> [--scale S] [--crop x,y,w,h]` | PNG/JPG/HEIC/WebP | PNG @1x. Conversão via `sips` (darwin); em outra plataforma, não-PNG → erro instrutivo. Downscale por fator inteiro com box filter (média de S×S). Crop aplicado ANTES do downscale, em px do arquivo original. stdout: `{ out, width, height, scale, cropped }`. |
 | `crop-region.mjs <png> --box x,y,w,h --out <png>` | PNG | Recorte exato; caixa fora dos limites → erro. stdout `{ out, width, height }`. |
 | `band-diff.mjs <a.png> <b.png> [--band 50] [--threshold 15]` | 2 PNGs | `{ band, bands:[{y0,y1,mismatchPct}], firstDriftBand, worst:[top 5] }`. Bandas comparadas na largura sobreposta; altura extra de uma das imagens conta como mismatch total (mesma honestidade do screenshot-diff). `firstDriftBand` = primeira faixa com mismatch > threshold. |
-| `detect-stack.mjs [dir]` | diretório | `{ framework: next\|vite-react\|vue\|svelte\|astro\|null, router: app\|pages\|null, typescript, styling:[tailwind@3\|tailwind@4\|css-modules\|styled-components\|vanilla], componentsDir:[candidatos], tokenFiles:[...], packageManager, devCommand }`. Só leitura de fs (package.json, configs, existência de pastas). Nada instalado, nada executado. |
+| `detect-stack.mjs [dir]` | diretório | `{ framework: next\|astro\|sveltekit\|svelte\|nuxt\|vue\|vite-react\|null, router: app\|pages\|null, typescript, styling:[tailwind@3\|tailwind@4\|css-modules\|styled-components\|vanilla], componentsDir:[candidatos], tokenFiles:[...], packageManager, devCommand }`. Só leitura de fs (package.json, configs, existência de pastas). Nada instalado, nada executado. |
 | `serve.mjs DIR --port P [--spa]` | pasta | servidor estático (vendorado). |
 | `screenshot-diff.mjs A.png B.png --out diff.png` | 2 PNGs | `{ scorePct, mismatched, total, width, height }` (vendorado). |
 
-`lib/png.mjs` concentra: `readPng`, `writePng`, `crop`, `downscaleBox`, `palette` (quantização a 4 bits por canal + agregação, top-N por frequência), `bandProfile` (luminância média e variância por faixa). Tudo puro, testável sem browser.
+`lib/png.mjs` concentra: `readPng`, `writePng`, `crop`, `downscaleBox`, `palette` (quantização a 5 bits por canal + agregação, top-N por frequência), `bandProfile` (luminância média e variância por faixa). Tudo puro, testável sem browser.
 
 ## Tratamento de erros
 
@@ -133,7 +133,7 @@ Convenções da família: ESM, dual-mode (função exportada + bloco CLI guardad
 - Escala confirmada diferente da sugerida → o intake prevalece; o `scaleReason` vai para o report.
 - `detect-stack` sem framework reconhecido → in-project vira standalone com aviso explícito, nunca "inventa" um framework.
 - Dev server que não sobe em 60s → parar a validação in-project, reportar, entregar o componente sem score (dizendo que não foi medido).
-- Harness que altera rotas públicas (ex.: colisão de slug) → abortar antes de escrever; slug sempre com prefixo `_pixelsmith`.
+- Harness que altera rotas públicas (ex.: colisão de slug) → abortar antes de escrever; slug sempre com prefixo `pixelsmith-harness` (nunca `_`: pastas com `_` são privadas no Next app router e ignoradas no Astro).
 - Print de terceiro sem confirmação de origem → não construir.
 
 ## Testes
@@ -154,3 +154,7 @@ Convenções da família: ESM, dual-mode (função exportada + bloco CLI guardad
 ## Fora de escopo (v1)
 
 Motion/animação; vídeo ou gravação de tela como entrada; geração de imagens por IA para assets ocultos; múltiplas páginas/rotas; eval harness com benchmark (como `figsmith-eval`); README em inglês; porte para Codex/Gemini (`skill-forge-convert`); frameworks fora da lista (Angular, Solid, Qwik) — caem no fallback standalone.
+
+## Revisões
+
+- 2026-09-12 — harness `pixelsmith-harness` (o prefixo `_` era inroteável); paleta 5-bit; enum de frameworks com sveltekit/nuxt (review final).

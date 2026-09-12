@@ -60,6 +60,7 @@ export function downscaleBox(png, factor) {
 
 // Quantiza a 5 bits por canal, agrega por bucket, devolve top-N com a cor MÉDIA real do bucket.
 export function palette(png, { top = 8, step = 1 } = {}) {
+  if (!Number.isInteger(top) || top < 1) throw new RangeError(`top inválido: ${top} (esperado inteiro ≥ 1)`);
   const buckets = new Map();
   let sampled = 0;
   for (let y = 0; y < png.height; y += step) for (let x = 0; x < png.width; x += step) {
@@ -78,6 +79,8 @@ export function palette(png, { top = 8, step = 1 } = {}) {
 
 // Luminância média (Rec.601) e variância por faixa horizontal. Serve para achar fronteiras de seção.
 export function bandProfile(png, { bands = 40 } = {}) {
+  if (!Number.isInteger(bands) || bands < 1) throw new RangeError(`bands inválido: ${bands} (esperado inteiro ≥ 1)`);
+  bands = Math.min(bands, png.height);
   const size = Math.max(1, Math.floor(png.height / bands));
   const out = [];
   for (let b = 0; b < bands && b * size < png.height; b++) {

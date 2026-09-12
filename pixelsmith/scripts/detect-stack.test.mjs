@@ -71,6 +71,10 @@ test('sem package.json: tudo nulo/vazio, sem lançar', () => {
   assert.equal(r.framework, null); assert.deepEqual(r.styling, ['vanilla']); assert.equal(r.packageManager, 'npm');
 });
 
+test('diretório inexistente lança', () => {
+  assert.throws(() => detectStack('/nao/existe/xyz'), /diretório inexistente/);
+});
+
 test('hasRootVars reconhece :root com seletores combinados e sem vars', () => {
   const combo = project({
     'package.json': { dependencies: { next: '15.0.0' } },

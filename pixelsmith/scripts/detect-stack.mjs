@@ -28,6 +28,7 @@ function hasCssModules(root, depth = 0) {
 }
 
 export function detectStack(dir = '.') {
+  if (!existsSync(dir) || !statSync(dir).isDirectory()) throw new Error(`diretório inexistente: ${dir}`);
   const pkg = readJson(join(dir, 'package.json')) ?? {};
   const deps = { ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}) };
   const has = (n) => Object.prototype.hasOwnProperty.call(deps, n);

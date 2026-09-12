@@ -48,32 +48,39 @@ recortados vão para a pasta pública convencional (`public/` em Next/Vite/Astro
 Server vs. client: componente puro de apresentação → server component (Next
 app) sem `'use client'`, a menos que use estado/handlers.
 
-## 4. Rota-harness (temporária, prefixo `_pixelsmith`)
+## 4. Rota-harness (temporária, prefixo `pixelsmith-harness`)
 
 Renderiza SÓ o componente, na largura exata do print @1x, sem layout global
 (sem header/sidebar/providers de app que mudem o visual). Antes de escrever:
 verifique que o caminho não existe (colisão → abortar e perguntar).
 
-Next app router — `app/_pixelsmith/<slug>/page.tsx` (ou `src/app/...`):
+Next app router — `app/pixelsmith-harness/<slug>/page.tsx` (ou `src/app/...`):
 ```tsx
 import Nome from '@/components/Nome';
 export default function Page() {
   return <div style={{ width: 1440, margin: 0 }}><Nome /></div>;
 }
 ```
-Se o `app/layout.tsx` injeta header/sidebar, crie também
-`app/_pixelsmith/layout.tsx` que devolve só `{children}` dentro de `<html><body>`
-(route group não é suficiente: o layout raiz sempre aplica).
+O layout raiz (`app/layout.tsx`) SEMPRE envolve a página — um layout aninhado
+não o substitui, e um route group também não escapa dele. Por isso a
+validação fotografa o `div` do harness, não a página inteira (§5). Se o
+layout raiz injeta header/nav/sidebar ou limita a largura de forma que
+altere o visual do componente, adicione no próprio `page.tsx` do harness um
+`<style>` escopado que esconda `header, nav, aside` e zere a largura máxima
+do `main`; só toque em `app/layout.tsx` depois de perguntar ao usuário.
 
-Next pages router — `pages/_pixelsmith-<slug>.tsx` com o mesmo `<div>`.
+Next pages router — `pages/pixelsmith-harness-<slug>.tsx` com o mesmo `<div>`.
 
 Vite (React/Vue/Svelte) — `pixelsmith-harness.html` na raiz +
 `src/pixelsmith-harness.(tsx|ts)` que monta o componente no `#root` com a
 largura fixa; acessível em `http://localhost:5173/pixelsmith-harness.html`.
 
-Astro — `src/pages/_pixelsmith-<slug>.astro` importando o componente.
+Astro — `src/pages/pixelsmith-harness-<slug>.astro` importando o componente.
 
-SvelteKit — `src/routes/_pixelsmith-<slug>/+page.svelte`.
+SvelteKit — `src/routes/pixelsmith-harness-<slug>/+page.svelte`.
+
+Nuxt — `pages/pixelsmith-harness-<slug>.vue` importando o componente num
+`<div :style="{ width: '1440px', margin: 0 }">`.
 
 Dev server: se não estiver respondendo na porta esperada, rode `devCommand`
 em background e espere até 60s pela porta; se não subir, pare a validação e

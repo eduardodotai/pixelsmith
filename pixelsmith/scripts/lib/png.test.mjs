@@ -78,3 +78,12 @@ test('writePng cria o diretório de saída se não existir', () => {
   writePng(out, createPng(2, 2));
   assert.equal(readPng(out).width, 2);
 });
+
+test('palette e bandProfile rejeitam top/bands inválidos e clampam bands à altura', () => {
+  const p = createPng(3, 3);
+  assert.throws(() => palette(p, { top: 0 }), RangeError);
+  assert.throws(() => bandProfile(p, { bands: 0 }), RangeError);
+  assert.throws(() => bandProfile(p, { bands: -3 }), RangeError);
+  assert.throws(() => bandProfile(p, { bands: 1.5 }), RangeError);
+  assert.equal(bandProfile(p, { bands: 10 }).length, 3);
+});

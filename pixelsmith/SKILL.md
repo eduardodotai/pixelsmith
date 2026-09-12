@@ -17,7 +17,7 @@ uma URL viva, `figsmith` de um arquivo Figma, `pixelsmith` de um **pixel**.
 ## Playbooks que esta espinha delega
 - `references/read-the-print-playbook.md` — escala, crop de chrome, mapa de seções medido, cores por amostragem, fonte por glifo, inventário de assets, copy verbatim. Leia ANTES da Fase 1.
 - `references/recreate-playbook.md` — saída standalone (estrutura, layout, assets, fit-zoom). A Fase 2 standalone segue ele.
-- `references/in-project-playbook.md` — stack, tokens do projeto primeiro, idioma do componente, rota-harness `_pixelsmith`, limpeza. A Fase 2 in-project segue ele.
+- `references/in-project-playbook.md` — stack, tokens do projeto primeiro, idioma do componente, rota-harness `pixelsmith-harness`, limpeza. A Fase 2 in-project segue ele.
 - `references/validate-playbook.md` — captura, diff @1x, band-diff, loop drift-first, platô, ruídos de print, report. A Fase 3 segue ele.
 
 ## Pipeline
@@ -45,7 +45,7 @@ confirme com o usuário antes de construir.
 
 ### Fase 2 — Construir
 - **standalone:** `recreate-playbook.md` → `site/` (HTML + CSS vanilla, sem build, sem CDN, sem motion). Use `impeccable`/`frontend-design` se disponíveis, sem alterar medidas.
-- **in-project:** `in-project-playbook.md` → `detect-stack.mjs` → tokens do projeto primeiro → componente no idioma do projeto → rota-harness `_pixelsmith`. Framework não reconhecido → cai para standalone com aviso.
+- **in-project:** `in-project-playbook.md` → `detect-stack.mjs` → tokens do projeto primeiro → componente no idioma do projeto → rota-harness `pixelsmith-harness`. Framework não reconhecido → cai para standalone com aviso.
 
 ### Fase 3 — Validar
 Siga `validate-playbook.md`:
@@ -63,7 +63,7 @@ Loop drift-first até **≥ 90%** por viewport ou **platô** (3 iterações com 
 
 | Comando | Output |
 |---|---|
-| `node <skill-dir>/scripts/inspect-image.mjs <png> [--bands 40] [--top 8]` | JSON: `width, height, suggestedScale, scaleReason, palette[], bands[]` |
+| `node <skill-dir>/scripts/inspect-image.mjs <png> [--bands 40] [--top 8]` | JSON: `width, height, suggestedScale, scaleReason, palette[], bands[]` (`--bands` é clampado à altura da imagem) |
 | `node <skill-dir>/scripts/normalize-image.mjs <in> --out <png> [--scale S] [--crop x,y,w,h]` | PNG @1x (converte JPG/HEIC/WebP via `sips` no macOS; crop antes do downscale) |
 | `node <skill-dir>/scripts/crop-region.mjs <png> --box x,y,w,h --out <png>` | recorte exato (px do arquivo de origem) |
 | `node <skill-dir>/scripts/band-diff.mjs A.png B.png [--band 50] [--threshold 15]` | JSON: `bands[]`, `firstDriftBand`, `worst[]` |
