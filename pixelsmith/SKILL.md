@@ -34,13 +34,13 @@ uma URL viva, `figsmith` de um arquivo Figma, `pixelsmith` de um **pixel**.
   ```
 - **Modo:** in-project quando `detect-stack.mjs .` reconhece um framework E o usuário pede "no projeto / esse componente / nessa página"; caso contrário standalone. Em dúvida, 1 pergunta.
 - **Gate de origem (obrigatório):** print próprio/cliente → reprodução fiel. Print de terceiro → modo **base-de-layout** (estrutura e espaçamento sim; logos, fotos e copy substituídos por placeholders neutros) — declarado no report. Sem resposta, não construa.
-- Artefatos em `./pixelsmith/` (`reference/`, `assets/`, `shots/`, `section-map.json`, `report.md`). No modo in-project, fora de `src/` e no `.gitignore` do projeto.
+- Artefatos em `./pixelsmith/`: `pixelsmith/reference/`, `pixelsmith/assets/`, `pixelsmith/shots/`, `pixelsmith/section-map.json`, `pixelsmith/report.md`. No modo in-project, fora de `src/` e no `.gitignore` do projeto.
 
 ### Fase 1 — Ler o print
 Siga `read-the-print-playbook.md`: mapa de seções medido com crops
 (`crop-region.mjs`) e perfil de bandas, cores por amostragem, fonte por
 specimen, inventário de assets (recortar do arquivo ORIGINAL vs. reproduzir em
-CSS), copy verbatim. **Gate:** apresente o `section-map.json` resumido e
+CSS), copy verbatim. **Gate:** apresente o `pixelsmith/section-map.json` resumido e
 confirme com o usuário antes de construir.
 
 ### Fase 2 — Construir
