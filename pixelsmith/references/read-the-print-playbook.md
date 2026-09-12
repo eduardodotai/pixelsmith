@@ -87,5 +87,5 @@ comprimento equivalente (mesmo número de linhas), declarado no report.
 
 ## 8. Gate de saída
 
-Apresente o `section-map.json` resumido em 1 mensagem (seções + medidas +
+Apresente o `pixelsmith/section-map.json` resumido em 1 mensagem (seções + medidas +
 fonte + assets) e peça confirmação. Só então construa.
